@@ -61,6 +61,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>BachelorGateway</finalName>
 	</build>
 	<repositories>
 		<repository>

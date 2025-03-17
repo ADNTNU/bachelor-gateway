@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: rest-route
+            uri: ${REST_ROUTE_URI:http://localhost:8080}
+            predicates:
+              - Path=/rest/**
+            filters:
+              - StripPrefix=1
+server:
+  port: ${PORT:8080}
