@@ -1,45 +1,32 @@
 package no.ntnu.gr10.bachelor_gateway.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import no.ntnu.gr10.bachelor_gateway.entity.Client;
-import no.ntnu.gr10.bachelor_gateway.service.ClientService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.Key;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final JwtService jwtService;
+  private final JwtUtil jwtUtil;
   private final UserDetailsService userDetailsService;
 
 
-  public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService){
-    this.jwtService = jwtService;
+  public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService){
+    this.jwtUtil = jwtUtil;
     this.userDetailsService = userDetailsService;
   }
 
@@ -55,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     if(username != null && notAuthenticatedYet()){
       UserDetails userDetails = getUserDetailsFromDatabase(username);
-      if(jwtService.validateToken(jwtToken, userDetails)) {
+      if(jwtUtil.validateToken(jwtToken, userDetails)) {
         registerUserAsAuthenticated(httpServletRequest, userDetails);
       }
     }
@@ -71,21 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       logger.warn("User: " + username + " Not found in the database.");
     }
     return userDetails;
-  }
-
-  private List<GrantedAuthority> buildAuthorities(Object scopesObj) {
-    if(scopesObj instanceof List){
-      List<String> scopes = (List<String>)  scopesObj;
-      return scopes.stream()
-              .map(scope -> (GrantedAuthority) () -> "SCOPE_" + scope.trim())
-              .collect(Collectors.toList());
-    }else if (scopesObj instanceof String){
-      String[] scopes = ((String) scopesObj).split(",");
-      return Arrays.stream(scopes)
-              .map(scope -> (GrantedAuthority) () -> "SCOPE_" + scope.trim())
-              .collect(Collectors.toList());
-    }
-    return List.of();
   }
 
   private String getJwtToken(HttpServletRequest httpServletRequest){
@@ -111,7 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private String getUsernameFrom(String jwtToken) {
     String username = null;
     try {
-      username = jwtService.extractUsername(jwtToken);
+      username = jwtUtil.extractUsername(jwtToken);
     } catch (MalformedJwtException malformedJwtException) {
       logger.warn("Malformed JWT: " + malformedJwtException.getMessage());
     } catch (JwtException jwtException) {

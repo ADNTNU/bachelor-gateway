@@ -1,26 +1,25 @@
 package no.ntnu.gr10.bachelor_gateway.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import no.ntnu.gr10.bachelor_gateway.entity.Client;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
-public class JwtService {
+public class JwtUtil {
 
   @Value("${jwt.secret_key}")
   private String secretKey;
-
 
   public String generateToken(UserDetails userDetails){
     final long timeNow = System.currentTimeMillis();

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
   @GetMapping("/hello")
   public String hello() {
-    // If you reach here, you are authenticated!
     return "Hello! You are authenticated via JWT.";
   }
 }

@@ -12,14 +12,13 @@ public class AccessUserDetails implements UserDetails {
 
   private final String tokenId;
   private final String tokenSecret;
+  // TODO Implement Authority
   //private final List<GrantedAuthority> authorityList = new LinkedList<>();
 
   public AccessUserDetails(Client client){
     this.tokenId = client.getClientId();
     this.tokenSecret = client.getSecret();
-
   }
-
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

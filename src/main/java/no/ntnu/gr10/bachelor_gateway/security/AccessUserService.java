@@ -12,8 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
+
+
 @Service
 public class AccessUserService implements UserDetailsService{
 
