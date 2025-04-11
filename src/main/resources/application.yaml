@@ -1,13 +1,14 @@
 spring:
   cloud:
     gateway:
-      routes:
-        - id: rest-route
-          uri: ${REST_ROUTE_URI:http://localhost:8080}
-          predicates:
-            - Path=/rest/**
-          filters:
-            - StripPrefix=1
+      mvc:
+        routes:
+          - id: rest-route
+            uri: ${REST_ROUTE_URI:http://localhost:8081}
+            predicates:
+              - Path=/rest/**
+            filters:
+              - StripPrefix=1
   application:
     name: bachelor-rest-api
   datasource:
@@ -27,3 +28,6 @@ spring:
 
 server:
   port: ${PORT:8080}
+
+jwt:
+  secret_key: ${JWT_KEY:YouAndIJudasEffectSpineLittleDarkAgesKnockAtMyDoor}

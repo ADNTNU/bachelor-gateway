@@ -5,6 +5,8 @@ import no.ntnu.gr10.bachelor_gateway.entity.Client;
 import no.ntnu.gr10.bachelor_gateway.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class ClientService {
@@ -15,8 +17,10 @@ public class ClientService {
     this.clientRepository = clientRepository;
   }
 
-  public Client findByClientId(String clientID){
+  public Optional<Client> findByClientId(String clientID){
     return clientRepository.findByClientId(clientID);
   }
+
+
 
 }
