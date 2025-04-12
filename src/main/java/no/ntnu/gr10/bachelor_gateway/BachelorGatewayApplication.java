@@ -1,35 +1,25 @@
 package no.ntnu.gr10.bachelor_gateway;
 
-import no.ntnu.gr10.bachelor_gateway.entity.Client;
-import no.ntnu.gr10.bachelor_gateway.repository.ClientRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
+/**
+ * Main application class for the Spring Boot application.
+ * This class serves as the entry point for the backend system, initializing and configuring the Spring context.
+ * {@link SpringBootApplication} annotation denotes this as a Spring Boot application.
+ *
+ * @author Daniel Neset
+ * @version 12.04.2025
+ */
 @SpringBootApplication
 public class BachelorGatewayApplication {
 
-	@Bean
-	CommandLineRunner initDatabase(ClientRepository clientRepository) {
-		return args -> {
-
-				Client client = new Client();
-				client.setClientId("testclient");
-				client.setSecret(createHash("SuperSecret"));
-				client.setScopes("READ,WRITE");
-				clientRepository.save(client);
-
-		};
-	}
-
+	/**
+	 * Main method to start up the Spring Boot application.
+	 *
+	 * @param args The command-line arguments passed during the start of the application.
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(BachelorGatewayApplication.class, args);
 	}
-
-	private String createHash(String password) {
-		return BCrypt.hashpw(password, BCrypt.gensalt());
 	}
-
-}

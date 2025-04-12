@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,60 +39,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           FilterChain filterChain
   )throws IOException, ServletException {
 
-    String jwtToken = getJwtToken(httpServletRequest);
-    String username = jwtToken != null ? getUsernameFrom(jwtToken) : null;
+    String jwtToken = getJwtFromRequest(httpServletRequest);
 
-    if(username != null && notAuthenticatedYet()){
-      UserDetails userDetails = getUserDetailsFromDatabase(username);
-      if(jwtUtil.validateToken(jwtToken, userDetails)) {
+    try {
+      if (jwtToken != null) {
+        String username = jwtUtil.verifyTokenAndGetUsername(jwtToken);
+        //TODO This can be removed? Token is validated. Needs testing
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
         registerUserAsAuthenticated(httpServletRequest, userDetails);
       }
+    } catch (JwtException | IllegalArgumentException ex) {
+      httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+      httpServletResponse.getWriter().write("Invalid JWT token");
+      return;
+    } catch (UsernameNotFoundException ex) {
+      httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+      httpServletResponse.getWriter().write("User not found");
+      return;
     }
 
     filterChain.doFilter(httpServletRequest, httpServletResponse);
   }
 
-  private UserDetails getUserDetailsFromDatabase(String username) {
-    UserDetails userDetails = null;
-    try {
-      userDetails = userDetailsService.loadUserByUsername(username);
-    } catch (UsernameNotFoundException usernameNotFoundException) {
-      logger.warn("User: " + username + " Not found in the database.");
+
+  private String getJwtFromRequest(HttpServletRequest request) {
+    final String BEARER_PREFIX = "Bearer ";
+    String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
+      return bearerToken.substring(BEARER_PREFIX.length()); // Remove "Bearer " prefix
     }
-    return userDetails;
+    return null;
   }
 
-  private String getJwtToken(HttpServletRequest httpServletRequest){
-    final String authorizationHeader = httpServletRequest.getHeader("Authorization");
-    String jwt = null;
-
-    if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-      jwt = stripBearerPrefixFrom(authorizationHeader);
-    }
-
-    return jwt;
-  }
-
-  private boolean notAuthenticatedYet() {
-    return SecurityContextHolder.getContext().getAuthentication() == null;
-  }
-
-  private static String stripBearerPrefixFrom(String authorizationHeaderValue) {
-    final int numberOfCharsToStrip = "Bearer ".length();
-    return authorizationHeaderValue.substring(numberOfCharsToStrip);
-  }
-
-  private String getUsernameFrom(String jwtToken) {
-    String username = null;
-    try {
-      username = jwtUtil.extractUsername(jwtToken);
-    } catch (MalformedJwtException malformedJwtException) {
-      logger.warn("Malformed JWT: " + malformedJwtException.getMessage());
-    } catch (JwtException jwtException) {
-      logger.warn("Error in JWT token: " + jwtException.getMessage());
-    }
-    return username;
-  }
 
   private static void registerUserAsAuthenticated(HttpServletRequest request, UserDetails userDetails) {
     final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
