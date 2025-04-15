@@ -1,7 +1,6 @@
 package no.ntnu.gr10.bachelor_gateway.security;
 
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,17 +18,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
+/**
+ * Filter for JWT authentication.
+ * This filter checks for the presence of a JWT token in the request header,
+ * validates it, and sets the authentication in the security context.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtUtil jwtUtil;
-  private final UserDetailsService userDetailsService;
 
 
-  public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService){
+  public JwtAuthenticationFilter(JwtUtil jwtUtil){
     this.jwtUtil = jwtUtil;
-    this.userDetailsService = userDetailsService;
   }
 
   @Override
@@ -43,11 +44,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     try {
       if (jwtToken != null) {
-        String username = jwtUtil.verifyTokenAndGetUsername(jwtToken);
-        //TODO This can be removed? Token is validated. Needs testing
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        //TODO Fetch userDetails from the token and not the database. The token is already validated and return with UserDetails
+         UserDetails userDetails1 = jwtUtil.verifyokenAndGetUserDetails(jwtToken);
 
-        registerUserAsAuthenticated(httpServletRequest, userDetails);
+        registerUserAsAuthenticated(httpServletRequest, userDetails1);
       }
     } catch (JwtException | IllegalArgumentException ex) {
       httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());

@@ -1,6 +1,7 @@
 package no.ntnu.gr10.bachelor_gateway.security;
 
 import no.ntnu.gr10.bachelor_gateway.apiKey.ApiKey;
+import no.ntnu.gr10.bachelor_gateway.company.Company;
 import no.ntnu.gr10.bachelor_gateway.scope.Scope;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ public class AccessUserDetails implements UserDetails {
   private final String tokenSecret;
   private final boolean enabled;
   private final List<GrantedAuthority> authorities = new LinkedList<>();
+  private final String companyId;
 
   public AccessUserDetails(ApiKey apiKey){
     this.id = apiKey.getId();
@@ -25,6 +27,7 @@ public class AccessUserDetails implements UserDetails {
     this.tokenSecret = apiKey.getClientSecret();
     this.enabled = apiKey.isEnabled();
     this.convertRoles(apiKey.getScopes());
+    this.companyId = apiKey.getCompany().getName();
   }
 
   private void convertRoles(Set<Scope> permissions) {
@@ -53,4 +56,14 @@ public class AccessUserDetails implements UserDetails {
   public boolean isEnabled() {
     return enabled;
   }
+
+  public String getCompany(){
+    return companyId;
+  }
+
+  public Long getId(){
+    return id;
+  }
+
+
 }
