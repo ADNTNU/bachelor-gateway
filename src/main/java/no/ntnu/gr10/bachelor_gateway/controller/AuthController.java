@@ -86,12 +86,12 @@ public class AuthController {
     return new AuthenticationResponse(
             jwt,
             userDetails.getUsername(),
-            userDetails.getCompany(),
+            userDetails.getCompanyId(),
             userDetails.getAuthorities()
     );
   }
 
   record AuthenticationRequest(String id, String secret) {}
-  record AuthenticationResponse(String token, String username, String company, Collection authorities) {}
+  record AuthenticationResponse(String token, String username, int company, Collection authorities) {}
 
 }

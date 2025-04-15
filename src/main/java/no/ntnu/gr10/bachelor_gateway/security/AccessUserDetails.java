@@ -19,7 +19,7 @@ public class AccessUserDetails implements UserDetails {
   private final String tokenSecret;
   private final boolean enabled;
   private final List<GrantedAuthority> authorities = new LinkedList<>();
-  private final String companyId;
+  private final int companyId;
 
   public AccessUserDetails(ApiKey apiKey){
     this.id = apiKey.getId();
@@ -27,7 +27,7 @@ public class AccessUserDetails implements UserDetails {
     this.tokenSecret = apiKey.getClientSecret();
     this.enabled = apiKey.isEnabled();
     this.convertRoles(apiKey.getScopes());
-    this.companyId = apiKey.getCompany().getName();
+    this.companyId = apiKey.getCompanyId();
   }
 
   private void convertRoles(Set<Scope> permissions) {
@@ -57,7 +57,7 @@ public class AccessUserDetails implements UserDetails {
     return enabled;
   }
 
-  public String getCompany(){
+  public int getCompanyId(){
     return companyId;
   }
 

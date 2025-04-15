@@ -7,10 +7,10 @@ import java.util.Collection;
 
 public class JwtUserDetails implements UserDetails {
   private final String id;
-  private final String company;
+  private final int company;
   private final Collection<? extends GrantedAuthority> authorities;
 
-  public JwtUserDetails(String id, String company, Collection<? extends GrantedAuthority> authorities) {
+  public JwtUserDetails(String id, int company, Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.company = company;
     this.authorities = authorities;

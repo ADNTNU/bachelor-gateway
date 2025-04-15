@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtUtil jwtUtil;
-
 
   public JwtAuthenticationFilter(JwtUtil jwtUtil){
     this.jwtUtil = jwtUtil;
@@ -50,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         registerUserAsAuthenticated(httpServletRequest, userDetails1);
       }
     } catch (JwtException | IllegalArgumentException ex) {
+      System.out.println(ex);
       httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
       httpServletResponse.getWriter().write("Invalid JWT token");
       return;

@@ -201,6 +201,10 @@ public class ApiKey {
     return company;
   }
 
+  public int getCompanyId() {
+    return company.getId();
+  }
+
   /**
    * Sets the company associated with the API key.
    * @param company The company to set.
