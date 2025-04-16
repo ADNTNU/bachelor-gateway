@@ -20,7 +20,7 @@ import java.util.Optional;
  * @version 11.04.2025
  */
 @Service
-public class AccessUserService implements UserDetailsService{
+public class CustomUserDetailsService implements UserDetailsService{
 
     private final ApiKeyRepository apiKeyRepository;
 
@@ -30,7 +30,7 @@ public class AccessUserService implements UserDetailsService{
    * @param apiKeyRepository the repository for accessing API key entities
    */
     @Autowired
-    public AccessUserService(ApiKeyRepository apiKeyRepository) {
+    public CustomUserDetailsService(ApiKeyRepository apiKeyRepository) {
       this.apiKeyRepository = apiKeyRepository;
     }
 
@@ -38,7 +38,7 @@ public class AccessUserService implements UserDetailsService{
    * Loads user details using the provided client id.
    * <p>
    * Retrieves the {@link ApiKey} using the client id (treated as the username) from the repository.
-   * If found, returns an {@link AccessUserDetails} instance wrapping the API key.
+   * If found, returns an {@link CustomUserDetails} instance wrapping the API key.
    * Otherwise, throws a {@link UsernameNotFoundException}.
    * </p>
    *
@@ -49,11 +49,13 @@ public class AccessUserService implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
       Optional<ApiKey> apiKey = apiKeyRepository.findByClientId(username);
-      if (apiKey.isPresent()) {
-        return new AccessUserDetails(apiKey.get());
-      } else {
-        throw new UsernameNotFoundException("User: " + username + " not found!");
+      if(apiKey.isPresent()) {
+        return new CustomUserDetails(apiKey.get());
+      } else
+      {
+          throw new UsernameNotFoundException("User: " + username + " not found!");
       }
     }
-
 }
+
+

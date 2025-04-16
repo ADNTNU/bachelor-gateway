@@ -6,16 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.InvalidKeyException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for managing JSON Web Tokens (JWT) in the application.
@@ -41,50 +36,48 @@ public class JwtUtil {
    */
   public String generateToken(Authentication authentication) throws InvalidKeyException {
     final long timeNow = System.currentTimeMillis();
-    final long millisecondsInHour = 60 * 60000;
+    final long millisecondsInHour = 3600000;
     final long timeAfterOneHour = timeNow + millisecondsInHour;
 
-    AccessUserDetails apiUser = (AccessUserDetails) authentication.getPrincipal();
+    CustomUserDetails apiUser = (CustomUserDetails) authentication.getPrincipal();
 
     return Jwts.builder()
-            .setSubject(authentication.getName())
+            .subject(authentication.getName())
             .claim(COMPANY_CLAIM, apiUser.getCompanyId())
-            .claim(SCOPE_CLAIM, authentication.getAuthorities()
-                    .stream()
-                    .map(auth -> auth.getAuthority())
-                    .collect(Collectors.toList()))
-            .setIssuedAt(new Date(timeNow))
-            .setExpiration(new Date(timeAfterOneHour))
+            .claim(SCOPE_CLAIM, apiUser.getAuthorities())
+            .issuedAt(new Date(timeNow))
+            .expiration(new Date(timeAfterOneHour))
             .signWith(getSigningKey())
             .compact();
   }
 
   /**
-   * Verifies the given JWT token and extracts the user details from its claims.
+   * Verifies the given JWT token and retrieves the username from it.
    * <p>
-   * This method uses the configured secret key to validate the token's signature and parses the token to extract the claims.
+   * This method checks the validity of the provided JWT token and extracts the username from it.
    * </p>
    *
-   * @param token the JWT token to be verified and parsed.
-   * @return a {@link UserDetails} instance representing the user details stored in the token.
-   * @throws JwtException if an error occurs during token verification or parsing.
-   * @throws IllegalArgumentException if the token is invalid or missing required claims.
+   * @param token the JWT token to verify
+   * @return the username extracted from the token
+   * @throws JwtException             if the token is invalid or expired
+   * @throws IllegalArgumentException if the token is null or empty
    */
-  public UserDetails verifyTokenAndGetUserDetails(String token) throws JwtException, IllegalArgumentException{
-    Claims jws = Jwts.parser()
+  public String verifyTokenAndGetUsername(String token) throws JwtException, IllegalArgumentException {
+    Claims claims = verifyTokenAndGetClaims(token);
+
+    return claims.getSubject();
+  }
+
+  private Claims verifyTokenAndGetClaims(String token) throws JwtException, IllegalArgumentException {
+    if (token == null || token.isEmpty()) {
+      throw new IllegalArgumentException("Token is null or empty");
+    }
+
+    return Jwts.parser()
             .verifyWith(getSigningKey())
             .build()
             .parseSignedClaims(token)
-            .getBody();
-
-    String apiKeyId = jws.getSubject().toString();
-    Integer companyId = jws.get(COMPANY_CLAIM, Integer.class);
-    List<String> scopeList = jws.get(SCOPE_CLAIM, List.class);
-    List<SimpleGrantedAuthority> authorities = scopeList.stream()
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
-
-    return new JwtUserDetails(apiKeyId, companyId, authorities);
+            .getPayload();
   }
 
   private SecretKey getSigningKey(){

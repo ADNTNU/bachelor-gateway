@@ -1,10 +1,15 @@
 package no.ntnu.gr10.bachelor_gateway.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import no.ntnu.gr10.bachelor_gateway.dto.ErrorResponse;
+import no.ntnu.gr10.bachelor_gateway.exception.UserIsDisabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,14 +36,18 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtUtil jwtUtil;
+  private final CustomUserDetailsService customUserDetailsService;
+  private final ObjectMapper objectMapper = new ObjectMapper();
+  private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
   /**
    * Constructs a new JwtAuthenticationFilter with the provided JwtUtil.
    *
    * @param jwtUtil the utility class used for JWT parsing and validation
    */
-  public JwtAuthenticationFilter(JwtUtil jwtUtil){
+  public JwtAuthenticationFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService){
     this.jwtUtil = jwtUtil;
+    this.customUserDetailsService = customUserDetailsService;
   }
 
   /**
@@ -60,26 +69,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           HttpServletResponse httpServletResponse,
           FilterChain filterChain
   )throws IOException, ServletException {
-
-    String jwtToken = getJwtFromRequest(httpServletRequest);
     try {
+      String jwtToken = getJwtFromRequest(httpServletRequest);
+
       if (jwtToken != null) {
-         UserDetails userDetails1 = jwtUtil.verifyTokenAndGetUserDetails(jwtToken);
+        String clientId = jwtUtil.verifyTokenAndGetUsername(jwtToken);
 
-        registerUserAsAuthenticated(httpServletRequest, userDetails1);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(clientId);
+
+        if(!userDetails.isEnabled()){
+          throw new UserIsDisabled("Account has been disabled");
+        }
+
+        registerUserAsAuthenticated(httpServletRequest, userDetails);
       }
-    } catch (JwtException | IllegalArgumentException ex) {
-      System.out.println(ex);
-      httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-      httpServletResponse.getWriter().write("Invalid JWT token");
-      return;
-    } catch (UsernameNotFoundException ex) {
-      httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-      httpServletResponse.getWriter().write("User not found");
-      return;
-    }
+      filterChain.doFilter(httpServletRequest, httpServletResponse);
 
-    filterChain.doFilter(httpServletRequest, httpServletResponse);
+    } catch (JwtException | IllegalArgumentException ex) {
+      writeJsonError(httpServletResponse, HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+    } catch (UsernameNotFoundException ex) {
+      writeJsonError(httpServletResponse, HttpStatus.NOT_FOUND, "User not found");
+    }catch (UserIsDisabled ex) {
+      writeJsonError(httpServletResponse, HttpStatus.UNAUTHORIZED, "User has been deactivated");
+    }
   }
 
 
@@ -94,9 +106,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
   private static void registerUserAsAuthenticated(HttpServletRequest request, UserDetails userDetails) {
-    final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-    upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-    SecurityContextHolder.getContext().setAuthentication(upat);
+    final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+  }
+
+  private void writeJsonError(HttpServletResponse response, HttpStatus status, String message) {
+    try {
+      response.setContentType("application/json");
+      response.setStatus(status.value());
+
+      ErrorResponse errorResponse = new ErrorResponse(message);
+      String json = objectMapper.writeValueAsString(errorResponse);
+
+      response.getWriter().write(json);
+    } catch (Exception e) {
+      log.error("Error writing JSON error response: {}. Original error: {}", e.getMessage(), message);
+      response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      try {
+        response.getWriter().write("Internal server error");
+      } catch (IOException ioException) {
+        log.error("Error writing internal server error response: {}", ioException.getMessage());
+      }
+    }
   }
 
 }

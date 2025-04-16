@@ -1,7 +1,6 @@
 package no.ntnu.gr10.bachelor_gateway.security;
 
 import no.ntnu.gr10.bachelor_gateway.apiKey.ApiKey;
-import no.ntnu.gr10.bachelor_gateway.company.Company;
 import no.ntnu.gr10.bachelor_gateway.scope.Scope;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +21,7 @@ import java.util.Set;
  * @author Daniel Neset
  * @version 11.04.2025
  */
-public class AccessUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
   private final long id;
   private final String tokenId;
@@ -36,7 +35,7 @@ public class AccessUserDetails implements UserDetails {
    *
    * @param apiKey the API key entity containing user information and scopes
    */
-  public AccessUserDetails(ApiKey apiKey){
+  public CustomUserDetails(ApiKey apiKey){
     this.id = apiKey.getId();
     this.tokenId = apiKey.getClientId();
     this.tokenSecret = apiKey.getClientSecret();
@@ -48,7 +47,7 @@ public class AccessUserDetails implements UserDetails {
   private void convertRoles(Set<Scope> permissions) {
     authorities.clear();
     for (Scope role : permissions) {
-      authorities.add(new SimpleGrantedAuthority(role.getName()));
+      authorities.add(new SimpleGrantedAuthority(Long.toString(role.getId())));
     }
   }
 

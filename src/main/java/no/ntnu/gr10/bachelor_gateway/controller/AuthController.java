@@ -1,11 +1,17 @@
 package no.ntnu.gr10.bachelor_gateway.controller;
 
-import no.ntnu.gr10.bachelor_gateway.security.AccessUserDetails;
+import no.ntnu.gr10.bachelor_gateway.controller.dto.AuthenticationRequest;
+import no.ntnu.gr10.bachelor_gateway.controller.dto.AuthenticationResponse;
+import no.ntnu.gr10.bachelor_gateway.dto.ErrorResponse;
+import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetails;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 
 /**
  * Controller for handling authentication-related requests.
@@ -27,6 +32,7 @@ import java.util.Collection;
 @RequestMapping("/auth")
 public class AuthController {
 
+  private static final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final JwtUtil jwtUtil;
   private final AuthenticationManager authenticationManager;
 
@@ -52,31 +58,36 @@ public class AuthController {
    *   @param authenticationRequest the login request containing username and password
    */
   @PostMapping
-  private ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest){
+  public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
+    ResponseEntity<?> response;
 
     try{
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(
-                      authenticationRequest.id,
-                      authenticationRequest.secret
+                      authenticationRequest.id(),
+                      authenticationRequest.secret()
               )
       );
       AuthenticationResponse authenticationResponse = authenticateAndGenerateResponse(authentication);
-      return ResponseEntity.ok(authenticationResponse);
+      response = ResponseEntity.ok(authenticationResponse);
 
     } catch (BadCredentialsException badCredentialsException) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-    } catch (Exception e) {
-      System.out.println(e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during authentication");
+      response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid username or password"));
+    }  catch (DisabledException e){
+      log.warn("User tried logged in with invalid credentials");
+      response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User has been disabled"));
+    }catch (Exception e) {
+      log.warn("User tried logging in with an disabled credentials");
+      response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("An error occurred during authentication"));
     }
 
+    return response;
   }
 
   private AuthenticationResponse authenticateAndGenerateResponse(Authentication authentication) {
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtil.generateToken(authentication);
-    AccessUserDetails userDetails = (AccessUserDetails) authentication.getPrincipal();
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
     return new AuthenticationResponse(
             jwt,
@@ -85,8 +96,5 @@ public class AuthController {
             userDetails.getAuthorities()
     );
   }
-
-  record AuthenticationRequest(String id, String secret) {}
-  record AuthenticationResponse(String token, String username, int company, Collection authorities) {}
 
 }

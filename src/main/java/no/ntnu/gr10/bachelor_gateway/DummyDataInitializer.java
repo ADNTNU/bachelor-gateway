@@ -35,9 +35,12 @@ public class DummyDataInitializer implements ApplicationListener<ApplicationRead
 
     /**Company company = new Company("BigBoyClub");
     ApiKey apiKey = new ApiKey(true, company, "Ree", "Raa");
-    Scope scope = new Scope("S_name", "S_des");
+    Scope scope = new Scope("key", "S_name", "S_des");
+    Scope scope2 = new Scope("key2", "SS_name", "SS_des");
     scopeRepository.save(scope);
+    scopeRepository.save(scope2);
     apiKey.addScope(scope);
+    apiKey.addScope(scope2);
     companyRepository.save(company);
     apiKeyRepository.save(apiKey);*/
 
