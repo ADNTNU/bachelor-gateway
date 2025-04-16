@@ -12,6 +12,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A UserDetails implementation for API key based authentication.
+ * <p>
+ * This class wraps an {@link ApiKey} entity and exposes its key values (ID, client id, secret, etc.)
+ * along with the granted authorities (derived from scopes) and company id.
+ * </p>
+ *
+ * @author Daniel Neset
+ * @version 11.04.2025
+ */
 public class AccessUserDetails implements UserDetails {
 
   private final long id;
@@ -21,6 +31,11 @@ public class AccessUserDetails implements UserDetails {
   private final List<GrantedAuthority> authorities = new LinkedList<>();
   private final int companyId;
 
+  /**
+   * Constructs a new AccessUserDetails using the provided API key.
+   *
+   * @param apiKey the API key entity containing user information and scopes
+   */
   public AccessUserDetails(ApiKey apiKey){
     this.id = apiKey.getId();
     this.tokenId = apiKey.getClientId();

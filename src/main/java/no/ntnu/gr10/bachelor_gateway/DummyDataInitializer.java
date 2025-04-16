@@ -11,6 +11,11 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Test class to implement sample data into the database.
+ *
+ * @author Daniel Neset
+ */
 @Component
 public class DummyDataInitializer implements ApplicationListener<ApplicationReadyEvent> {
 

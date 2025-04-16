@@ -1,8 +1,6 @@
 package no.ntnu.gr10.bachelor_gateway.controller;
 
-import no.ntnu.gr10.bachelor_gateway.company.Company;
 import no.ntnu.gr10.bachelor_gateway.security.AccessUserDetails;
-import no.ntnu.gr10.bachelor_gateway.security.AccessUserService;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,17 +29,14 @@ public class AuthController {
 
   private final JwtUtil jwtUtil;
   private final AuthenticationManager authenticationManager;
-  private final AccessUserService accessUserService;
 
   /**
    * Constructor for AuthController
    *
-   * @param accessUserService The ApiKey service
    * @param jwtUtil The JWT token provider
    * @param authenticationManager The authentication manager
    */
-  public AuthController(AccessUserService accessUserService, JwtUtil jwtUtil, AuthenticationManager authenticationManager){
-    this.accessUserService = accessUserService;
+  public AuthController(JwtUtil jwtUtil, AuthenticationManager authenticationManager){
     this.jwtUtil = jwtUtil;
     this.authenticationManager = authenticationManager;
   }

@@ -18,19 +18,42 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Filter for JWT authentication.
- * This filter checks for the presence of a JWT token in the request header,
- * validates it, and sets the authentication in the security context.
+ * JWT authentication filter.
+ * <p>
+ * Checks for the presence of a JWT token in the request header, validates it,
+ * and sets the authentication in the security context.
+ * </p>
+ *
+ * @author Daniel Neset
+ * @version 11.04.2025
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtUtil jwtUtil;
 
+  /**
+   * Constructs a new JwtAuthenticationFilter with the provided JwtUtil.
+   *
+   * @param jwtUtil the utility class used for JWT parsing and validation
+   */
   public JwtAuthenticationFilter(JwtUtil jwtUtil){
     this.jwtUtil = jwtUtil;
   }
 
+  /**
+   * Filters incoming requests to process the JWT token if present.
+   * <p>
+   * If a valid JWT is found, it extracts the user details from it and registers
+   * the authentication in the SecurityContext.
+   * </p>
+   *
+   * @param httpServletRequest  the incoming HTTP request
+   * @param httpServletResponse the HTTP response
+   * @param filterChain         the filter chain
+   * @throws IOException      if an input/output exception occurs
+   * @throws ServletException if a servlet error occurs
+   */
   @Override
   protected void doFilterInternal(
           HttpServletRequest httpServletRequest,
@@ -39,11 +62,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   )throws IOException, ServletException {
 
     String jwtToken = getJwtFromRequest(httpServletRequest);
-
     try {
       if (jwtToken != null) {
-        //TODO Fetch userDetails from the token and not the database. The token is already validated and return with UserDetails
-         UserDetails userDetails1 = jwtUtil.verifyokenAndGetUserDetails(jwtToken);
+         UserDetails userDetails1 = jwtUtil.verifyTokenAndGetUserDetails(jwtToken);
 
         registerUserAsAuthenticated(httpServletRequest, userDetails1);
       }

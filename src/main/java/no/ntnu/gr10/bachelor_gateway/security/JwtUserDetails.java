@@ -5,18 +5,35 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/**
+ * Represents a JWT-based user and implements {@link UserDetails}.
+ * <p>
+ * This implementation holds the unique API key client id (used as the username),
+ * the associated company id, and the collection of granted authorities.
+ * The password is not used, so {@code getPassword()} returns an empty string.
+ * </p>
+ *
+ * @author Daniel Neset
+ * @version 14.04.2025
+ */
 public class JwtUserDetails implements UserDetails {
   private final String id;
   private final int company;
   private final Collection<? extends GrantedAuthority> authorities;
 
+  /**
+   * Constructs a new {@code JwtUserDetails} instance.
+   *
+   * @param id the unique API key client id, used as the username
+   * @param company the company id associated with the API key
+   * @param authorities the granted authorities (roles/scopes)
+   */
   public JwtUserDetails(String id, int company, Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.company = company;
     this.authorities = authorities;
   }
 
-  // This is not used with JWT, so we return an empty string.
   @Override
   public String getPassword() {
     return "";
