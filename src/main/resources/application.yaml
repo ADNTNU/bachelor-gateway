@@ -4,10 +4,30 @@ spring:
       mvc:
         routes:
           - id: rest-route
-            uri: ${REST_ROUTE_URI:http://localhost:8080}
+            uri: ${REST_ROUTE_URI:http://localhost:8081}
             predicates:
               - Path=/rest/**
             filters:
               - StripPrefix=1
+  application:
+    name: bachelor-rest-api
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:test_db}?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
 server:
   port: ${PORT:8080}
+
+jwt:
+  secret_key: ${JWT_KEY:YouAndIJudasEffectSpineLittleDarkAgesKnockAtMyDoor}
