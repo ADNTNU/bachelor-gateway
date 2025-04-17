@@ -24,8 +24,8 @@ public class JwtUtil {
 
   @Value("${jwt.secret_key}")
   private String secretKey;
-  private static final String COMPANY_CLAIM = "company";
-  private static final String SCOPE_CLAIM = "scope";
+  private static final String COMPANY_ID_CLAIM = "companyId";
+  private static final String SCOPES_CLAIM = "scopes";
 
   /**
    * Generates a JWT for a given user.
@@ -43,8 +43,8 @@ public class JwtUtil {
 
     return Jwts.builder()
             .subject(authentication.getName())
-            .claim(COMPANY_CLAIM, apiUser.getCompanyId())
-            .claim(SCOPE_CLAIM, apiUser.getAuthorities())
+            .claim(COMPANY_ID_CLAIM, apiUser.getCompanyId())
+            .claim(SCOPES_CLAIM, apiUser.getAuthorities())
             .issuedAt(new Date(timeNow))
             .expiration(new Date(timeAfterOneHour))
             .signWith(getSigningKey())
