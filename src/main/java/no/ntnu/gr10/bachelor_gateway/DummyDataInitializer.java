@@ -33,16 +33,17 @@ public class DummyDataInitializer implements ApplicationListener<ApplicationRead
   @Override
   public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
 
-    /**Company company = new Company("BigBoyClub");
-    ApiKey apiKey = new ApiKey(true, company, "Ree", "Raa");
-    Scope scope = new Scope("key", "S_name", "S_des");
-    Scope scope2 = new Scope("key2", "SS_name", "SS_des");
-    scopeRepository.save(scope);
-    scopeRepository.save(scope2);
-    apiKey.addScope(scope);
-    apiKey.addScope(scope2);
-    companyRepository.save(company);
-    apiKeyRepository.save(apiKey);*/
-
+    if (apiKeyRepository.count() == 0) {
+      Company company = new Company("BigBoyClub");
+      ApiKey apiKey = new ApiKey(true, company, "Ree", "Raa");
+      Scope scope = new Scope("key", "S_name", "S_des");
+      Scope scope2 = new Scope("key2", "SS_name", "SS_des");
+      scopeRepository.save(scope);
+      scopeRepository.save(scope2);
+      apiKey.addScope(scope);
+      apiKey.addScope(scope2);
+      companyRepository.save(company);
+      apiKeyRepository.save(apiKey);
+    }
   }
 }
