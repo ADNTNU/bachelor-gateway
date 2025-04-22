@@ -47,7 +47,7 @@ public class CustomUserDetails implements UserDetails {
   private void convertRoles(Set<Scope> permissions) {
     authorities.clear();
     for (Scope role : permissions) {
-      authorities.add(new SimpleGrantedAuthority(Long.toString(role.getId())));
+      authorities.add(new SimpleGrantedAuthority(role.getKey()));
     }
   }
 
