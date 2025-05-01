@@ -15,6 +15,6 @@ message AuthRequest {
 
 message AuthResponse {
   string token     = 1;  // signed JWT
-  string username  = 2;  // authenticated id
-  int32  companyId = 3;  // company id
+  int32  companyId = 2; // company claim from JWT
+  repeated string roles = 3; // list of authorities/roles
 }
