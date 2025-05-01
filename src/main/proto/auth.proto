@@ -1,0 +1,20 @@
+syntax = "proto3";
+package no.ntnu.gr10.bachelor_gateway.auth;
+
+option java_package    = "no.ntnu.gr10.bachelor_gateway.auth";
+option java_outer_classname = "AuthProto";
+
+service Auth {
+  rpc Authenticate (AuthRequest) returns (AuthResponse);
+}
+
+message AuthRequest {
+  string id     = 1;   // clientId
+  string secret = 2;   // clientSecret
+}
+
+message AuthResponse {
+  string token     = 1;  // signed JWT
+  string username  = 2;  // authenticated id
+  int32  companyId = 3;  // company id
+}

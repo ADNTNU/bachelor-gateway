@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Utility class for managing JSON Web Tokens (JWT) in the application.
@@ -50,6 +51,19 @@ public class JwtUtil {
             .signWith(getSigningKey())
             .compact();
   }
+
+  // TODO refactor
+  public String generateToken(String subject, Map<String,Object> claims) {
+    Date now = new Date();
+    return Jwts.builder()
+            .subject(subject)
+            .claims(claims)
+            .issuedAt(now)
+            .expiration(new Date(now.getTime() + 3600000))
+            .signWith(getSigningKey())
+            .compact();
+  }
+
 
   /**
    * Verifies the given JWT token and retrieves the username from it.
