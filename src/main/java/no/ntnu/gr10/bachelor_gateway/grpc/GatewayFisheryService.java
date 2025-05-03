@@ -21,13 +21,10 @@ public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryAct
           ListFisheryActivitiesRequest request,
           StreamObserver<ListFisheryActivitiesResponse> responseObserver) {
 
-    // 1) grab the Metadata we stored in JwtAuthInterceptor
     Metadata headers = SecurityContext.CURRENT_METADATA.get();
 
-    // 2) bind it to the downstream stub
     var stubWithHeaders = MetadataUtils.attachHeaders(stub, headers);
 
-    // 3) forward
     try {
       var resp = stubWithHeaders.listFisheryActivities(request);
       responseObserver.onNext(resp);
