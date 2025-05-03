@@ -34,5 +34,9 @@ grpc:
     port: 9090
     reflection-service-enabled: true
 
+  client:
+    fishery-service:
+      address: static://localhost:9091
+      negotiation-type: plaintext
 jwt:
   secret_key: ${JWT_KEY:YouAndIJudasEffectSpineLittleDarkAgesKnockAtMyDoor}

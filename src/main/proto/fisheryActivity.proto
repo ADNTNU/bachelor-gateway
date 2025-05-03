@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package no.ntnu.gr10.bachelor_grpc_api.fisheryActivity;
+
+// Tell protoc to generate Java classes in the same package as your DTO
+option java_package = "no.ntnu.gr10.bachelor_grpc_api.fisheryActivity";
+option java_multiple_files = true;
+option java_outer_classname = "FisheryActivityProto";
+
+import "google/protobuf/timestamp.proto";
+
+message ResponseFisheryActivity {
+  int64 id = 1;
+  google.protobuf.Timestamp setup_date_time = 2;
+  string tool_type_code = 3;
+  string tool_type_name = 4;
+  string tool_id = 5;
+  google.protobuf.Timestamp removed_date_time = 6;
+  google.protobuf.Timestamp last_changed_date_time = 7;
+  double starting_point_lat = 8;
+  double starting_point_lon = 9;
+  double length = 10;
+  string geometry = 11;
+}
+
+message GetFisheryActivityRequest {
+  int64 id = 1;
+}
+
+message ListFisheryActivitiesRequest {
+}
+
+message ListFisheryActivitiesResponse {
+  repeated ResponseFisheryActivity activities = 1;
+}
+
+
+service FisheryActivityService {
+  rpc GetFisheryActivity(GetFisheryActivityRequest) returns (ResponseFisheryActivity);
+  rpc ListFisheryActivities(ListFisheryActivitiesRequest) returns (ListFisheryActivitiesResponse);
+}
