@@ -1,5 +1,7 @@
-package no.ntnu.gr10.bachelor_gateway.security;
+package no.ntnu.gr10.bachelor_gateway.security.rest;
 
+import no.ntnu.gr10.bachelor_gateway.security.Scopes;
+import no.ntnu.gr10.bachelor_gateway.security.rest.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,6 +69,7 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/rest/**").hasAuthority(Scopes.FISHERY_ACTIVITY.getAuthority())
                     .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

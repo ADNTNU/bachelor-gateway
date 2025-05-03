@@ -1,4 +1,4 @@
-package no.ntnu.gr10.bachelor_gateway.security;
+package no.ntnu.gr10.bachelor_gateway.security.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import no.ntnu.gr10.bachelor_gateway.dto.ErrorResponse;
 import no.ntnu.gr10.bachelor_gateway.exception.UserIsDisabled;
+import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetailsService;
+import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;

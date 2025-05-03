@@ -4,7 +4,7 @@ spring:
       mvc:
         routes:
           - id: rest-route
-            uri: ${REST_ROUTE_URI:http://localhost:8081}
+            uri: ${REST_ROUTE_URI:http://localhost:8082}
             predicates:
               - Path=/rest/**
             filters:
@@ -12,7 +12,7 @@ spring:
   application:
     name: bachelor-rest-api
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:test_db}?createDatabaseIfNotExist=true
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:test_db2}?createDatabaseIfNotExist=true
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver

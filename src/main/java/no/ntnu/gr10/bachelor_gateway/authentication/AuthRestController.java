@@ -1,7 +1,7 @@
-package no.ntnu.gr10.bachelor_gateway.controller;
+package no.ntnu.gr10.bachelor_gateway.authentication;
 
-import no.ntnu.gr10.bachelor_gateway.controller.dto.AuthenticationRequest;
-import no.ntnu.gr10.bachelor_gateway.controller.dto.AuthenticationResponse;
+import no.ntnu.gr10.bachelor_gateway.authentication.dto.AuthenticationRequest;
+import no.ntnu.gr10.bachelor_gateway.authentication.dto.AuthenticationResponse;
 import no.ntnu.gr10.bachelor_gateway.dto.ErrorResponse;
 import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetails;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthRestController {
 
-  private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+  private static final Logger log = LoggerFactory.getLogger(AuthRestController.class);
   private final JwtUtil jwtUtil;
   private final AuthenticationManager authenticationManager;
 
@@ -42,7 +42,7 @@ public class AuthController {
    * @param jwtUtil The JWT token provider
    * @param authenticationManager The authentication manager
    */
-  public AuthController(JwtUtil jwtUtil, AuthenticationManager authenticationManager){
+  public AuthRestController(JwtUtil jwtUtil, AuthenticationManager authenticationManager){
     this.jwtUtil = jwtUtil;
     this.authenticationManager = authenticationManager;
   }

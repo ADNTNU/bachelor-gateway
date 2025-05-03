@@ -1,4 +1,4 @@
-package no.ntnu.gr10.bachelor_gateway.controller;
+package no.ntnu.gr10.bachelor_gateway.authentication;
 
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -15,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 @GrpcService

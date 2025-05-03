@@ -1,9 +1,21 @@
 package no.ntnu.gr10.bachelor_gateway.apiKey;
 
-import jakarta.persistence.*;
-import no.ntnu.gr10.bachelor_gateway.company.Company;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import no.ntnu.gr10.bachelor_gateway.commonEntities.Company;
 import no.ntnu.gr10.bachelor_gateway.scope.Scope;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -51,7 +63,7 @@ public class ApiKey {
           joinColumns = @JoinColumn(name = "api_key_id"),
           inverseJoinColumns = @JoinColumn(name = "scope_id")
   )
-  private Set<Scope> scopes = new HashSet<>();
+  private final Set<Scope> scopes = new HashSet<>();
 
   /**
    * Default constructor for JPA.
@@ -201,10 +213,6 @@ public class ApiKey {
     return company;
   }
 
-  public int getCompanyId() {
-    return company.getId();
-  }
-
   /**
    * Sets the company associated with the API key.
    * @param company The company to set.
@@ -226,20 +234,18 @@ public class ApiKey {
   }
 
   /**
-   * Adds a scope to the API key.
-   * <p>
-   * This method adds a new scope to the set of scopes. If the provided scope is null,
-   * an IllegalArgumentException is thrown.
-   * </p>
-   * @param scope The scope to add.
-   * @throws IllegalArgumentException if the scope is null.
+   * Sets the scopes associated with the API key.
+   * @param scopes The scopes to set.
+   * @throws IllegalArgumentException if the scopes are null.
    */
-  public void addScope(Scope scope) {
-    if (scope == null) {
-      throw new IllegalArgumentException("Scope cannot be null");
+  public void setScopes(Collection<Scope> scopes) {
+    if (scopes == null) {
+      throw new IllegalArgumentException("Scopes cannot be null");
     }
-    this.scopes.add(scope);
+    this.scopes.clear();
+    this.scopes.addAll(scopes);
   }
+
 
   /**
    * Checks if two API keys are equal.

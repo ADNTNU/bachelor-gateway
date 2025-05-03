@@ -1,18 +1,13 @@
-package no.ntnu.gr10.bachelor_gateway.grpc;
+package no.ntnu.gr10.bachelor_gateway.security.grpc;
 
 import io.grpc.*;
 import io.jsonwebtoken.JwtException;
-import net.devh.boot.grpc.common.security.SecurityConstants;
 import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor;
 import no.ntnu.gr10.bachelor_gateway.auth.AuthGrpc;
 import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetails;
 import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetailsService;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
-import no.ntnu.gr10.bachelor_gateway.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +57,8 @@ public class JwtAuthInterceptor implements ServerInterceptor {
       call.close(Status.UNAUTHENTICATED.withDescription("Invalid token"), new Metadata());
       return new ServerCall.Listener<>() {};
     }
+
+    // TODO, check if the user has access to the grpc api before sending data over there
 
     CustomUserDetails user;
     try {

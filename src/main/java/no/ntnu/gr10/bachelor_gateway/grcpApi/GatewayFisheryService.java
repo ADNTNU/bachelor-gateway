@@ -1,10 +1,11 @@
-package no.ntnu.gr10.bachelor_gateway.grpc;
+package no.ntnu.gr10.bachelor_gateway.grcpApi;
 
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.common.security.SecurityConstants;
 import net.devh.boot.grpc.server.service.GrpcService;
+import no.ntnu.gr10.bachelor_gateway.security.grpc.GrpcClientConfig;
+import no.ntnu.gr10.bachelor_gateway.security.grpc.SecurityContext;
 import no.ntnu.gr10.bachelor_grpc_api.fisheryActivity.*;
 
 @GrpcService

@@ -1,4 +1,4 @@
-package no.ntnu.gr10.bachelor_gateway.grpc;
+package no.ntnu.gr10.bachelor_gateway.security.grpc;
 
 import io.grpc.ManagedChannel;
 import net.devh.boot.grpc.client.inject.GrpcClient;
