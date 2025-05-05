@@ -31,7 +31,7 @@
         <spring-cloud.version>2025.0.0-M2</spring-cloud.version>
         <spring.boot.version>3.5.0-M2</spring.boot.version>
         <grpc.version>1.58.0</grpc.version>
-        <os.detected.classifier>${os.detected.classifier}</os.detected.classifier>
+        <!--<os.detected.classifier>${os.detected.classifier}</os.detected.classifier> -->
     </properties>
     <dependencies>
         <!-- Spring Cloud Gateway -->

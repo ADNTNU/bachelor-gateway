@@ -31,7 +31,7 @@ public class AuthGrpcService extends AuthGrpc.AuthImplBase {
             new UsernamePasswordAuthenticationToken(req.getId(), req.getSecret());
 
     authManager.authenticate(token)
-            .cast(CustomUserDetails.class)
+            .map(auth -> (CustomUserDetails) auth.getPrincipal())
             .map(user -> {
               Map<String, Object> claims = Map.of(
                       "companyId", user.getCompanyId(),
