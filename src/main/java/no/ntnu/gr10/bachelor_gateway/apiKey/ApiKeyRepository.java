@@ -1,5 +1,6 @@
 package no.ntnu.gr10.bachelor_gateway.apiKey;
 
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

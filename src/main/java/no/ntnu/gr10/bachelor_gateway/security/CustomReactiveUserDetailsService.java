@@ -2,37 +2,35 @@ package no.ntnu.gr10.bachelor_gateway.security;
 
 import no.ntnu.gr10.bachelor_gateway.apiKey.ApiKey;
 import no.ntnu.gr10.bachelor_gateway.apiKey.ApiKeyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * Service for retrieving access user details from the API key repository.
  * <p>
- * This service implements {@link UserDetailsService} and loads user details based on the API key's client id.
+ * This service implements {@link ReactiveUserDetailsService} and loads user details based on the API key's client id.
  * </p>
  *
  * @author Daniel Neset
  * @version 11.04.2025
  */
-@Service
-public class CustomUserDetailsService implements UserDetailsService{
+@Component
+public class CustomReactiveUserDetailsService implements ReactiveUserDetailsService {
 
-    private final ApiKeyRepository apiKeyRepository;
+  private final ApiKeyRepository apiKeyRepository;
 
   /**
    * Constructs a new AccessUserService with the specified ApiKeyRepository.
    *
    * @param apiKeyRepository the repository for accessing API key entities
    */
-    @Autowired
-    public CustomUserDetailsService(ApiKeyRepository apiKeyRepository) {
-      this.apiKeyRepository = apiKeyRepository;
-    }
+  public CustomReactiveUserDetailsService(ApiKeyRepository apiKeyRepository) {
+    this.apiKeyRepository = apiKeyRepository;
+  }
 
   /**
    * Loads user details using the provided client id.
@@ -46,16 +44,15 @@ public class CustomUserDetailsService implements UserDetailsService{
    * @return the corresponding {@link UserDetails} for the API key
    * @throws UsernameNotFoundException if the API key is not found
    */
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-      Optional<ApiKey> apiKey = apiKeyRepository.findByClientId(username);
-      if(apiKey.isPresent()) {
-        return new CustomUserDetails(apiKey.get());
-      } else
-      {
-          throw new UsernameNotFoundException("User: " + username + " not found!");
-      }
-    }
+  @Override
+  public Mono<UserDetails> findByUsername(String username) {
+    return Mono.fromCallable(() -> apiKeyRepository.findByClientId(username)
+                    .map(CustomUserDetails::new)
+                    .map(UserDetails.class::cast)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username))
+            )
+            .subscribeOn(Schedulers.boundedElastic());
+  }
 }
 
 

@@ -1,7 +1,6 @@
-package no.ntnu.gr10.bachelor_gateway.company;
+package no.ntnu.gr10.bachelor_gateway.commonEntities;
 
 import jakarta.persistence.*;
-import no.ntnu.gr10.bachelor_gateway.administrator.Administrator;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -22,13 +21,14 @@ import java.util.Set;
 public class Company {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private long id;
 
   @Column(unique = true, nullable = false)
   private String name;
 
-  @ManyToMany(mappedBy = "companies")
-  private Set<Administrator> administrators = new HashSet<>();
+  @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+  private final Set<AdministratorCompany> administratorCompanies = new HashSet<>();
+
 
   public Company() {
     // Default constructor for JPA
@@ -42,7 +42,7 @@ public class Company {
     setName(name);
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
@@ -67,36 +67,13 @@ public class Company {
   }
 
   /**
-   * Gets the administrators associated with the company.
-   * @return The set of administrators associated with the company.
+   * Gets the administrator-company relationships associated with this company.
+   * @return A set of AdministratorCompany objects representing the relationships.
    */
-  public Set<Administrator> getAdministrators() {
-    return administrators;
+  public Set<AdministratorCompany> getAdministratorCompanies() {
+    return administratorCompanies;
   }
 
-  /**
-   * Adds an administrator to the company.
-   */
-  public void addAdministrator(Administrator administrator) {
-    if (administrator == null) {
-      throw new IllegalArgumentException("Administrator cannot be null");
-    }
-    administrators.add(administrator);
-//        TODO: Verify if we need to add the company to the administrator as well
-    administrator.getCompanies().add(this);
-  }
-
-  /**
-   * Removes an administrator from the company.
-   */
-  public void removeAdministrator(Administrator administrator) {
-    if (administrator == null) {
-      throw new IllegalArgumentException("Administrator cannot be null");
-    }
-    administrators.remove(administrator);
-//        TODO: Verify if we need to remove the company from the administrator as well
-    administrator.getCompanies().remove(this);
-  }
 
   /**
    * Checks whether two companies are equal based on their ID and name.

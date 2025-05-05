@@ -41,7 +41,8 @@ public class CustomUserDetails implements UserDetails {
     this.tokenSecret = apiKey.getClientSecret();
     this.enabled = apiKey.isEnabled();
     this.convertRoles(apiKey.getScopes());
-    this.companyId = apiKey.getCompanyId();
+    //TODO bad
+    this.companyId = (int) apiKey.getCompany().getId();
   }
 
   private void convertRoles(Set<Scope> permissions) {
