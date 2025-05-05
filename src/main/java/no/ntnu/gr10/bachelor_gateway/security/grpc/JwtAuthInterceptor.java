@@ -46,9 +46,11 @@ public class JwtAuthInterceptor implements ServerInterceptor {
             .withValue(SecurityContext.CURRENT_METADATA, headers);
 
     String fullMethod = call.getMethodDescriptor().getFullMethodName();
-    String loginMethod = AuthGrpc.SERVICE_NAME + "/Authenticate";
-    if (fullMethod.equals(loginMethod)) {
-      return Contexts.interceptCall(ctx, call, headers, next);
+    if (fullMethod.equals(AuthGrpc.SERVICE_NAME + "/Authenticate")
+            || fullMethod.equals("grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo")
+            || fullMethod.equals("grpc.health.v1.Health/Check")
+            || fullMethod.equals("grpc.health.v1.Health/Watch")) {
+      return next.startCall(call, headers);
     }
 
     String raw = headers.get(SecurityContext.AUTH_HEADER);
