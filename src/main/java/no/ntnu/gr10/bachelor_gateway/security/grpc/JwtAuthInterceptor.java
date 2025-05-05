@@ -1,28 +1,36 @@
 package no.ntnu.gr10.bachelor_gateway.security.grpc;
 
-import io.grpc.*;
+import io.grpc.Context;
+import io.grpc.Contexts;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
+import io.grpc.Status;
 import io.jsonwebtoken.JwtException;
-import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor;
 import no.ntnu.gr10.bachelor_gateway.auth.AuthGrpc;
+import no.ntnu.gr10.bachelor_gateway.security.CustomReactiveUserDetailsService;
 import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetails;
-import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetailsService;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
-@GrpcGlobalServerInterceptor
+@GlobalServerInterceptor
 public class JwtAuthInterceptor implements ServerInterceptor {
 
 
   private final JwtUtil jwtUtil;
-  private final CustomUserDetailsService userDetailsService;
+  private final CustomReactiveUserDetailsService userDetailsService;
 
   @Autowired
   public JwtAuthInterceptor(
           JwtUtil jwtUtil,
-          CustomUserDetailsService userDetailsService
+          CustomReactiveUserDetailsService userDetailsService
   ) {
     this.jwtUtil = jwtUtil;
     this.userDetailsService = userDetailsService;
@@ -62,12 +70,14 @@ public class JwtAuthInterceptor implements ServerInterceptor {
 
     CustomUserDetails user;
     try {
-      user = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+      user = (CustomUserDetails) userDetailsService
+              .findByUsername(username)
+              .block(Duration.ofSeconds(1));
     } catch (UsernameNotFoundException e) {
       call.close(Status.UNAUTHENTICATED.withDescription("User not found"), new Metadata());
       return new ServerCall.Listener<>() {};
     }
-    if (!user.isEnabled()) {
+    if (user == null || !user.isEnabled()) {
       call.close(Status.PERMISSION_DENIED.withDescription("User account disabled"), new Metadata());
       return new ServerCall.Listener<>() {};
     }

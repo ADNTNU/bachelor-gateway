@@ -1,6 +1,5 @@
 package no.ntnu.gr10.bachelor_gateway;
 
-import net.devh.boot.grpc.server.autoconfigure.GrpcServerSecurityAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,9 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Daniel Neset
  * @version 12.04.2025
  */
-@SpringBootApplication(
-				exclude = GrpcServerSecurityAutoConfiguration.class
-)
+@SpringBootApplication()
 public class BachelorGatewayApplication {
 
 	/**

@@ -1,12 +1,13 @@
 package no.ntnu.gr10.bachelor_gateway.grcpApi;
 
 import io.grpc.Metadata;
-import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.server.service.GrpcService;
 import no.ntnu.gr10.bachelor_gateway.security.grpc.GrpcClientConfig;
 import no.ntnu.gr10.bachelor_gateway.security.grpc.SecurityContext;
 import no.ntnu.gr10.bachelor_grpc_api.fisheryActivity.*;
+import org.springframework.grpc.server.service.GrpcService;
+
+import static io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor;
 
 @GrpcService
 public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryActivityServiceImplBase {
@@ -24,7 +25,9 @@ public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryAct
 
     Metadata headers = SecurityContext.CURRENT_METADATA.get();
 
-    var stubWithHeaders = MetadataUtils.attachHeaders(stub, headers);
+    var stubWithHeaders = stub.withInterceptors(
+            newAttachHeadersInterceptor(headers)
+    );
 
     try {
       var resp = stubWithHeaders.listFisheryActivities(request);
@@ -41,7 +44,9 @@ public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryAct
           StreamObserver<ResponseFisheryActivity> responseObserver) {
 
     Metadata headers = SecurityContext.CURRENT_METADATA.get();
-    var stubWithHeaders = MetadataUtils.attachHeaders(stub, headers);
+    var stubWithHeaders = stub.withInterceptors(
+            newAttachHeadersInterceptor(headers)
+    );
 
     try {
       var resp = stubWithHeaders.getFisheryActivity(request);

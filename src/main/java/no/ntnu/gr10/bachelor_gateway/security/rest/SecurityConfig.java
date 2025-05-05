@@ -1,22 +1,18 @@
 package no.ntnu.gr10.bachelor_gateway.security.rest;
 
 import no.ntnu.gr10.bachelor_gateway.security.Scopes;
-import no.ntnu.gr10.bachelor_gateway.security.rest.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
  * Security configuration class for setting up authentication and authorization.
@@ -26,9 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @version 05.04.2025
  */
 @Configuration
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
-  private final UserDetailsService userDetailsService;
+  private final ReactiveUserDetailsService userDetailsService;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   /**
@@ -37,20 +34,20 @@ public class SecurityConfig {
    * @param userDetailsService the service to load user-specific data
    * @param jwtAuthenticationFilter the filter for JWT authentication
    */
-  public SecurityConfig(UserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter){
+  public SecurityConfig(ReactiveUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter){
     this.userDetailsService = userDetailsService;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 
   /**
-   * Configures authentication using the provided UserDetailsService.
-   *
-   * @param auth the AuthenticationManagerBuilder to configure
-   * @throws Exception if an error occurs during configuration
+   * Configures authentication manager using the provided UserDetailsService.
    */
-  @Autowired
-  protected void configureAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService);
+  @Bean
+  public ReactiveAuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
+    UserDetailsRepositoryReactiveAuthenticationManager manager =
+            new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+    manager.setPasswordEncoder(passwordEncoder);
+    return manager;
   }
 
 
@@ -62,30 +59,18 @@ public class SecurityConfig {
    * @throws Exception if an error occurs during configuration
    */
   @Bean
-  protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
-    httpSecurity
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(AbstractHttpConfigurer::disable)
+  public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    return http
+            .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .cors(Customizer.withDefaults())
-            .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/rest/**").hasAuthority(Scopes.FISHERY_ACTIVITY.getAuthority())
-                    .anyRequest().authenticated())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    return httpSecurity.build();
-  }
-
-  /**
-   * Creates an AuthenticationManager bean.
-   *
-   * @param config the AuthenticationConfiguration
-   * @return the AuthenticationManager
-   * @throws Exception if an error occurs while retrieving the manager
-   */
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
+            .authorizeExchange(exchanges -> exchanges
+                    .pathMatchers("/auth/**").permitAll()
+                    .pathMatchers("/ws-auth-token").permitAll()
+                    .pathMatchers("/ws/data/**").permitAll()
+                    .pathMatchers("/rest/**").hasAuthority(Scopes.FISHERY_ACTIVITY.getAuthority())
+                    .anyExchange().authenticated())
+            .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            .build();
   }
 
   /**
@@ -95,7 +80,7 @@ public class SecurityConfig {
    */
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return NoOpPasswordEncoder.getInstance();
+    return new BCryptPasswordEncoder();
   }
 
 }

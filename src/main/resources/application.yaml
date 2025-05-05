@@ -1,20 +1,26 @@
 spring:
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: rest-route
-            uri: ${REST_ROUTE_URI:http://localhost:8082}
-            predicates:
-              - Path=/rest/**
-            filters:
-              - StripPrefix=1
+      routes:
+        - id: rest-route
+          uri: ${REST_ROUTE_URI:http://localhost:8082}
+          predicates:
+            - Path=/rest/**
+          filters:
+            - StripPrefix=1
+        - id: websocket-route
+          uri: ${WS_ROUTE_URI:ws://localhost:8086}
+          predicates:
+            - Path=/ws/data/{entity}
+          filters:
+            - name: WebSocketSessionAuthFilter
+              args: {}
   application:
     name: bachelor-rest-api
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:test_db2}?createDatabaseIfNotExist=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:dev}?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:devuser}
+    password: ${DB_PASSWORD:devpass123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -25,6 +31,10 @@ spring:
         format_sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
 server:
   port: ${PORT:8080}
@@ -40,3 +50,13 @@ grpc:
       negotiation-type: plaintext
 jwt:
   secret_key: ${JWT_KEY:YouAndIJudasEffectSpineLittleDarkAgesKnockAtMyDoor}
+
+cors:
+  allowedOrigins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001}
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway=DEBUG:
