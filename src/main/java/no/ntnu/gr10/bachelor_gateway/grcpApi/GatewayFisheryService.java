@@ -2,10 +2,10 @@ package no.ntnu.gr10.bachelor_gateway.grcpApi;
 
 import io.grpc.Metadata;
 import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
 import no.ntnu.gr10.bachelor_gateway.security.grpc.GrpcClientConfig;
 import no.ntnu.gr10.bachelor_gateway.security.grpc.SecurityContext;
 import no.ntnu.gr10.bachelor_grpc_api.fisheryActivity.*;
-import org.springframework.grpc.server.service.GrpcService;
 
 import static io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor;
 

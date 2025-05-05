@@ -67,7 +67,8 @@ public class WebSocketSessionAuthFilter extends AbstractGatewayFilterFactory<Web
     };
   }
 
-  public interface Config {
+  @SuppressWarnings("unused")
+  public static class Config {
     // Empty config class to satisfy AbstractGatewayFilterFactory
   }
 }

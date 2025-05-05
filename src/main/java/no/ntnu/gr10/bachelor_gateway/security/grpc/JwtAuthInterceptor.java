@@ -8,19 +8,19 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
 import io.jsonwebtoken.JwtException;
+import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor;
 import no.ntnu.gr10.bachelor_gateway.auth.AuthGrpc;
 import no.ntnu.gr10.bachelor_gateway.security.CustomReactiveUserDetailsService;
 import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetails;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
 @Component
-@GlobalServerInterceptor
+@GrpcGlobalServerInterceptor
 public class JwtAuthInterceptor implements ServerInterceptor {
 
 

@@ -2,12 +2,12 @@ package no.ntnu.gr10.bachelor_gateway.authentication;
 
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
 import no.ntnu.gr10.bachelor_gateway.auth.AuthGrpc;
 import no.ntnu.gr10.bachelor_gateway.auth.AuthProto;
 import no.ntnu.gr10.bachelor_gateway.security.CustomUserDetails;
 import no.ntnu.gr10.bachelor_gateway.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.grpc.server.service.GrpcService;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
