@@ -1,27 +1,24 @@
-package no.ntnu.gr10.bachelor_gateway.grcpApi;
+package no.ntnu.gr10.bachelor_gateway.grpcGateway;
 
 import io.grpc.Metadata;
 import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;
-import no.ntnu.gr10.bachelor_gateway.security.grpc.GrpcClientConfig;
 import no.ntnu.gr10.bachelor_gateway.security.grpc.SecurityContext;
-import no.ntnu.gr10.bachelor_grpc_api.fisheryActivity.*;
+import no.ntnu.gr10.bachelor_grpc_api.fishingFacility.*;
 
 import static io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor;
 
 @GrpcService
-public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryActivityServiceImplBase {
+public class GatewayFishingFacilityService extends FishingFacilityServiceGrpc.FishingFacilityServiceImplBase {
 
-  private final FisheryActivityServiceGrpc.FisheryActivityServiceBlockingStub stub;
-
-  public GatewayFisheryService(GrpcClientConfig cfg) {
-    this.stub = cfg.getFisheryStub();
-  }
+  @GrpcClient("grpc-api")
+  private FishingFacilityServiceGrpc.FishingFacilityServiceBlockingStub stub;
 
   @Override
-  public void listFisheryActivities(
-          ListFisheryActivitiesRequest request,
-          StreamObserver<ListFisheryActivitiesResponse> responseObserver) {
+  public void listFishingFacilities(
+          ListFishingFacilitiesRequest request,
+          StreamObserver<ListFishingFacilitiesResponse> responseObserver) {
 
     Metadata headers = SecurityContext.CURRENT_METADATA.get();
 
@@ -30,7 +27,7 @@ public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryAct
     );
 
     try {
-      var resp = stubWithHeaders.listFisheryActivities(request);
+      var resp = stubWithHeaders.listFishingFacilities(request);
       responseObserver.onNext(resp);
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
@@ -39,9 +36,9 @@ public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryAct
   }
 
   @Override
-  public void getFisheryActivity(
-          GetFisheryActivityRequest request,
-          StreamObserver<ResponseFisheryActivity> responseObserver) {
+  public void getFishingFacility(
+          GetFishingFacilityRequest request,
+          StreamObserver<ResponseFishingFacility> responseObserver) {
 
     Metadata headers = SecurityContext.CURRENT_METADATA.get();
     var stubWithHeaders = stub.withInterceptors(
@@ -49,11 +46,12 @@ public class GatewayFisheryService extends FisheryActivityServiceGrpc.FisheryAct
     );
 
     try {
-      var resp = stubWithHeaders.getFisheryActivity(request);
+      var resp = stubWithHeaders.getFishingFacility(request);
       responseObserver.onNext(resp);
       responseObserver.onCompleted();
     } catch (RuntimeException e) {
       responseObserver.onError(e);
     }
   }
+
 }
