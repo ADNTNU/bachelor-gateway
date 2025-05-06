@@ -54,7 +54,7 @@ public class SecurityConfig {
   /**
    * Defines the security filter chain.
    *
-   * @param httpSecurity the HttpSecurity to configure
+   * @param http the HttpSecurity to configure
    * @return the SecurityFilterChain
    * @throws Exception if an error occurs during configuration
    */
@@ -67,7 +67,9 @@ public class SecurityConfig {
                     .pathMatchers("/auth/**").permitAll()
                     .pathMatchers("/ws-auth-token").permitAll()
                     .pathMatchers("/ws/data/**").permitAll()
-                    .pathMatchers("/rest/**").hasAuthority(Scopes.FISHERY_ACTIVITY.getAuthority())
+                    .pathMatchers("/rest/fisheryActivities/**").hasAuthority(Scopes.FISHERY_ACTIVITY.getAuthority())
+                    .pathMatchers("/rest/fishingFacilities/**").hasAuthority(Scopes.FISHING_FACILITY.getAuthority())
+                    .pathMatchers("/restAdm/**").hasAuthority(Scopes.ADMIN.getAuthority())
                     .anyExchange().authenticated())
             .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             .build();

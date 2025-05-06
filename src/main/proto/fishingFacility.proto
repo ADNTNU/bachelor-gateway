@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package no.ntnu.gr10.bachelor_grpc_api.fishingFacility;
+
+option java_package = "no.ntnu.gr10.bachelor_grpc_api.fishingFacility";
+option java_multiple_files = true;
+option java_outer_classname = "FishingFacilityProto";
+
+import "google/protobuf/timestamp.proto";
+
+message ResponseFishingFacility {
+  int64 id = 1;
+  string type = 2;
+  string bbox = 3;
+  string geometry = 4;
+  int32 version = 5;
+  string vessel_name = 6;
+  string vessel_phone = 7;
+  string tool_type_code = 8;
+  google.protobuf.Timestamp setup_datetime = 9;
+  string tool_id = 10;
+  string ircs = 11;
+  string mmsi = 12;
+  string imo = 13;
+  string vessel_email = 14;
+  string tool_type_name = 15;
+  string tool_color = 16;
+  string source = 17;
+  string comment = 18;
+  google.protobuf.Timestamp removed_datetime = 19;
+  google.protobuf.Timestamp last_changed_datetime = 20;
+  string last_changed_by_source = 21;
+  string reg_num = 22;
+  string sbr_reg_num = 23;
+  google.protobuf.Timestamp setup_processed_time = 24;
+  google.protobuf.Timestamp removed_processed_time = 25;
+  int32 tool_count = 26;
+}
+
+message GetFishingFacilityRequest {
+  int64 id = 1;
+}
+
+message ListFishingFacilitiesRequest {
+}
+
+message ListFishingFacilitiesResponse {
+  repeated ResponseFishingFacility facilities = 1;
+}
+
+service FishingFacilityService {
+  rpc GetFishingFacility(GetFishingFacilityRequest) returns (ResponseFishingFacility);
+  rpc ListFishingFacilities(ListFishingFacilitiesRequest) returns (ListFishingFacilitiesResponse);
+}

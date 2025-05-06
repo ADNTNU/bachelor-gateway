@@ -51,7 +51,7 @@ grpc:
     reflection-service-enabled: true
 
   client:
-    fishery-service:
+    grpc-api:
       address: static://${GRPC_API_HOST:localhost}:${GRPC_API_PORT:9091}
       negotiation-type: plaintext
 jwt:
