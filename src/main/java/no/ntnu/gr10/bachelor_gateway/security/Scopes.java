@@ -4,8 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 public enum Scopes implements GrantedAuthority {
 
-  FISHERY_ACTIVITY("fishery_activity"),
-  FISHING_FACILITY("fishing_facility"),
+  FISHERY_ACTIVITY("fishery-activity"),
+  FISHING_FACILITY("fishing-facility"),
   ADMIN("admin");
 
   private final String authority;
