@@ -50,6 +50,7 @@ public class CustomUserDetails implements UserDetails {
     for (Scope role : permissions) {
       authorities.add(new SimpleGrantedAuthority(role.getKey()));
     }
+    authorities.add(new SimpleGrantedAuthority(Scopes.ADMIN.getAuthority()));
   }
 
   @Override
