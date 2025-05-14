@@ -50,6 +50,9 @@ public class CustomUserDetails implements UserDetails {
     for (Scope role : permissions) {
       authorities.add(new SimpleGrantedAuthority(role.getKey()));
     }
+//    Temporarily adds ADMIN role to all API keys, that allows all API-keys to interact with the producer API.
+//    Just for making the demo work semi-securely without needing to create a separate role system for the producer.
+    authorities.add(new SimpleGrantedAuthority(Scopes.ADMIN.getAuthority()));
   }
 
   @Override

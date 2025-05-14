@@ -60,9 +60,12 @@ jwt:
 cors:
   allowedOrigins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001}
 
-logging:
-  level:
-    org:
-      springframework:
-        cloud:
-          gateway=DEBUG:
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        cloud:
+#          gateway: DEBUG
+#    reactor.netty.http.client: DEBUG
+#    reactor.netty.tcp: DEBUG
+#    org.springframework.cloud.gateway.filter.NettyRoutingFilter: DEBUG
