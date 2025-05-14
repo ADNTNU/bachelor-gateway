@@ -36,6 +36,7 @@ public class AuthGrpcService extends AuthGrpc.AuthImplBase {
               Map<String, Object> claims = Map.of(
                       "companyId", user.getCompanyId(),
                       "scopes", user.getAuthorities().stream()
+                              .map(GrantedAuthority::getAuthority)
                               .toList()
               );
               String jwt = jwtUtil.generateToken(user.getUsername(), claims);
