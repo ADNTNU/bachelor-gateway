@@ -69,3 +69,7 @@ logging:
     reactor.netty.http.client: DEBUG
     reactor.netty.tcp: DEBUG
     org.springframework.cloud.gateway.filter.NettyRoutingFilter: DEBUG
+    io.grpc: DEBUG
+    io.grpc.netty.shaded: DEBUG
+    no.ntnu.gr10.bachelor_gateway.security.grpc: DEBUG
+    no.ntnu.gr10.bachelor_gateway.grpcGateway: DEBUG
