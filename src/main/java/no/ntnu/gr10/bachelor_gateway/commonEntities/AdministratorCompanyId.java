@@ -4,6 +4,12 @@ import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
 
+/**
+ * This class represents a composite key for the AdministratorCompany entity.
+ * It consists of two fields: administratorId and companyId.
+ * The class implements Serializable and overrides equals() and hashCode() methods
+ * to ensure proper comparison and hashing based on the composite key fields.
+ */
 @Embeddable
 public class AdministratorCompanyId implements Serializable {
   private Long administratorId;

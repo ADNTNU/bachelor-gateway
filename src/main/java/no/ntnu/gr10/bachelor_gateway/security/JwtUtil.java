@@ -57,7 +57,7 @@ public class JwtUtil {
             .compact();
   }
 
-  // TODO refactor
+
   public String generateToken(String subject, Map<String, Object> claims) {
     Date now = new Date();
     return Jwts.builder()

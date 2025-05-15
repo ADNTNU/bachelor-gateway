@@ -2,6 +2,14 @@ package no.ntnu.gr10.bachelor_gateway.commonEntities;
 
 import jakarta.persistence.*;
 
+/**
+ * Represents the association between an administrator and a company.
+ * This entity is used to manage the relationship between administrators and companies,
+ * including their roles and status (enabled/accepted).
+ *
+ * @author Anders Lund
+ * @version 23.04.2025
+ */
 @Entity
 @Table(name = "administrator_company")
 public class AdministratorCompany {

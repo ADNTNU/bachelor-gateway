@@ -34,6 +34,7 @@ public class AuthRestController {
   private final JwtUtil jwtUtil;
   private final ReactiveAuthenticationManager authenticationManager;
 
+
   /**
    * Constructor for AuthController
    *
@@ -44,6 +45,7 @@ public class AuthRestController {
     this.jwtUtil = jwtUtil;
     this.authenticationManager = authenticationManager;
   }
+
 
   /**
    * Authenticates the user and returns a JWT token if successful.

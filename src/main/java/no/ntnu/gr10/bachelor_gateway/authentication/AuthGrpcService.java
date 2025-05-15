@@ -14,17 +14,48 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Map;
 
+/**
+ * gRPC service for handling authentication requests in the gateway.
+ * <p>
+ * Provides the <code>Authenticate</code> RPC method, which validates user credentials
+ * via the <code>ReactiveAuthenticationManager</code>, generates a JWT containing
+ * user-specific claims (company ID and scopes), and returns it along with user metadata.
+ * </p>
+ *
+ * @author Daniel Neset
+ * @version 14.05.2025
+ */
 @GrpcService
 public class AuthGrpcService extends AuthGrpc.AuthImplBase {
   private final ReactiveAuthenticationManager authManager;
   private final JwtUtil jwtUtil;
 
+
+  /**
+   * Constructs the AuthGrpcService with its required dependencies.
+   *
+   * @param authManager The reactive authentication manager used to validate credentials
+   * @param jwtUtil The utility for creating JWTs with custom claims
+   */
   @Autowired
   public AuthGrpcService(ReactiveAuthenticationManager authManager, JwtUtil jwtUtil) {
     this.authManager = authManager;
     this.jwtUtil = jwtUtil;
   }
 
+
+  /**
+   * Handles the <code>Authenticate</code> RPC.
+   * <p>
+   * Takes an <code>AuthRequest</code> containing an ID and secret, authenticates the user,
+   * generates a JWT with the user's company ID and granted scopes, and returns an
+   * <code>AuthResponse</code> with the token, company ID, and roles. Emits appropriate
+   * gRPC status codes on authentication failure or errors.
+   * </p>
+   *
+   * @param req The authentication request with user credentials
+   * @param resp The stream observer used to send back the authentication response or error
+   */
   @Override
   public void authenticate(AuthProto.AuthRequest req, StreamObserver<AuthProto.AuthResponse> resp) {
     UsernamePasswordAuthenticationToken token =

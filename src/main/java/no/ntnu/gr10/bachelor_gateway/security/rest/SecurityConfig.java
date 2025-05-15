@@ -96,6 +96,8 @@ public class SecurityConfig {
                     .pathMatchers("/auth/**").permitAll()
                     .pathMatchers("/ws-auth-token").permitAll()
                     .pathMatchers("/ws/data/**").permitAll()
+                    .pathMatchers("/swagger-ui/**","/v3/api-docs/**","/webjars/**").permitAll()
+                    .pathMatchers("/rest/swagger-ui/**","/rest/v3/api-docs/**").permitAll()
                     .pathMatchers("/rest/fisheryActivities/**").hasAuthority(Scopes.FISHERY_ACTIVITY.getAuthority())
                     .pathMatchers("/rest/fishingFacilities/**").hasAuthority(Scopes.FISHING_FACILITY.getAuthority())
                     .pathMatchers("/restAdm/**").hasAuthority(Scopes.ADMIN.getAuthority())
