@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package no.ntnu.gr10.bachelor_grpc_api.fishingFacility;
+package no.ntnu.gr10.bachelorgrpcapi.fishingfacility;
 
-option java_package = "no.ntnu.gr10.bachelor_grpc_api.fishingFacility";
+option java_package = "no.ntnu.gr10.bachelorgrpcapi.fishingfacility";
 option java_multiple_files = true;
 option java_outer_classname = "FishingFacilityProto";
 
@@ -17,7 +17,7 @@ message ResponseFishingFacility {
   string vessel_name = 6;
   string vessel_phone = 7;
   string tool_type_code = 8;
-  google.protobuf.Timestamp setup_datetime = 9;
+  google.protobuf.Timestamp setup_date_time = 9;
   string tool_id = 10;
   string ircs = 11;
   string mmsi = 12;
@@ -27,8 +27,8 @@ message ResponseFishingFacility {
   string tool_color = 16;
   string source = 17;
   string comment = 18;
-  google.protobuf.Timestamp removed_datetime = 19;
-  google.protobuf.Timestamp last_changed_datetime = 20;
+  google.protobuf.Timestamp removed_date_time = 19;
+  google.protobuf.Timestamp last_changed_date_time = 20;
   string last_changed_by_source = 21;
   string reg_num = 22;
   string sbr_reg_num = 23;
