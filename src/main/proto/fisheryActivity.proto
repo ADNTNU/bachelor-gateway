@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package no.ntnu.gr10.bachelor_grpc_api.fisheryActivity;
+package no.ntnu.gr10.bachelorgrpcapi.fisheryactivity;
 
 // Tell protoc to generate Java classes in the same package as your DTO
-option java_package = "no.ntnu.gr10.bachelor_grpc_api.fisheryActivity";
+option java_package = "no.ntnu.gr10.bachelorgrpcapi.fisheryactivity";
 option java_multiple_files = true;
 option java_outer_classname = "FisheryActivityProto";
 
